@@ -1,0 +1,7 @@
+{
+  "gamerule.hollowKnightPhysicsOn": "Are Hollow Knight physics on",
+  "gamerule.canPlayerMove": "Can the player move freely",
+  "gamerule.isKnockbackOn": "Is the player knockback on",
+  "commands.velocity.success.multiple": "Set velocity of %s entities to %s, %s, %s",
+  "commands.velocity.success.single": "Set velocity of %s to %s, %s, %s"
+}

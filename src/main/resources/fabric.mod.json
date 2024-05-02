@@ -1,0 +1,41 @@
+{
+	"schemaVersion": 1,
+	"id": "clouser-hollowknight-physics-mod",
+	"version": "${version}",
+	"name": "Clouser Hollow Knight physics mod",
+	"description": "Player's physics override mod for Clouser's Hollow Knight minecraft map",
+	"authors": [
+		"Mortimer Kerman"
+	],
+	"contact": {
+		"homepage": "https://mortimer-kerman.github.io/",
+		"sources": "https://github.com/Mortimer-Kerman/ClouserHollowKnightPhysicsMod"
+	},
+	"license": "MIT",
+	"icon": "assets/clouser-hollowknight-physics-mod/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.mortimer_kerman.clouserhollowknightphysicsmod.ClouserHollowKnightPhysicsMod"
+		],
+		"client": [
+			"net.mortimer_kerman.clouserhollowknightphysicsmod.ClouserHollowKnightPhysicsModClient"
+		]
+	},
+	"mixins": [
+		"clouser-hollowknight-physics-mod.mixins.json",
+		{
+			"config": "clouser-hollowknight-physics-mod.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.15.10",
+		"minecraft": "~1.20.4",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

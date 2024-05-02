@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "net.mortimer_kerman.clouserhollowknightphysicsmod.mixin.client",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "PlayerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "mixins": [
+    "KeyBindingMixin",
+    "LivingEntityMixin"
+  ]
+}
