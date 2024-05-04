@@ -23,8 +23,7 @@ public class KeyBindingMixin
                             ||translationKey.equals("key.left")
                             ||translationKey.equals("key.back")
                             ||translationKey.equals("key.right")
-                            ||translationKey.equals("key.jump")
-                            ||translationKey.equals("/*PUT THE SPECIAL JUMP KEYBIND HERE*/");
+                            ||translationKey.equals("key.jump");
         cir.setReturnValue(cir.getReturnValue() && (ClouserHollowKnightPhysicsModClient.movementOn || !movementKey));
     }
 }

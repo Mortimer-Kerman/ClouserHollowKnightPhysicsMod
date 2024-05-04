@@ -32,6 +32,9 @@ public class GameruleMixin
         if (key.getName().equals(ClouserHollowKnightPhysicsMod.PHYSICS_GAMERULE.getName())) channel = ClouserHollowKnightPhysicsMod.PHYSICS_ON;
         else if (key.getName().equals(ClouserHollowKnightPhysicsMod.MOVEMENT_GAMERULE.getName())) channel = ClouserHollowKnightPhysicsMod.MOVEMENT_ON;
         else if (key.getName().equals(ClouserHollowKnightPhysicsMod.KNOCKBACK_GAMERULE.getName())) channel = ClouserHollowKnightPhysicsMod.KNOCKBACK_ON;
+        else if (key.getName().equals(ClouserHollowKnightPhysicsMod.AXIS_X_GAMERULE.getName())) channel = ClouserHollowKnightPhysicsMod.AXIS_X_ON;
+        else if (key.getName().equals(ClouserHollowKnightPhysicsMod.AXIS_Y_GAMERULE.getName())) channel = ClouserHollowKnightPhysicsMod.AXIS_Y_ON;
+        else if (key.getName().equals(ClouserHollowKnightPhysicsMod.DOUBLEJUMP_GAMERULE.getName())) channel = ClouserHollowKnightPhysicsMod.DOUBLEJUMP_ON;
         else return;
 
         MinecraftServer server = context.getSource().getServer();
