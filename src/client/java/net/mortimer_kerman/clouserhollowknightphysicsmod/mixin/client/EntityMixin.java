@@ -38,9 +38,7 @@ public abstract class EntityMixin
     @Shadow public float prevYaw;
     @Shadow public @Nullable abstract Entity getVehicle();
 
-    @Shadow public boolean velocityDirty;
-
-    @Shadow public abstract void setVelocity(Vec3d velocity);
+    @Shadow public float fallDistance;
 
     @Inject(at = @At("HEAD"), method = "changeLookDirection(DD)V", cancellable = true)
     protected void onLookDirectionChange(double cursorDeltaX, double cursorDeltaY, CallbackInfo ci) { }

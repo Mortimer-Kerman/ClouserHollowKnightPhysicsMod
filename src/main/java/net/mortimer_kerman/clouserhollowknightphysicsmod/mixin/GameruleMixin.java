@@ -1,6 +1,7 @@
 package net.mortimer_kerman.clouserhollowknightphysicsmod.mixin;
 
 import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -28,6 +29,8 @@ public class GameruleMixin
     private static <T extends GameRules.Rule<T>> void SetGravity(CommandContext<ServerCommandSource> context, GameRules.Key<T> key, CallbackInfoReturnable<Integer> cir)
     {
         Identifier channel;
+        MinecraftServer server = context.getSource().getServer();
+        PacketByteBuf data = PacketByteBufs.create();
 
         if (key.getName().equals(ClouserHollowKnightPhysicsMod.PHYSICS_GAMERULE.getName())) channel = ClouserHollowKnightPhysicsMod.PHYSICS_ON;
         else if (key.getName().equals(ClouserHollowKnightPhysicsMod.MOVEMENT_GAMERULE.getName())) channel = ClouserHollowKnightPhysicsMod.MOVEMENT_ON;
@@ -35,11 +38,21 @@ public class GameruleMixin
         else if (key.getName().equals(ClouserHollowKnightPhysicsMod.AXIS_X_GAMERULE.getName())) channel = ClouserHollowKnightPhysicsMod.AXIS_X_ON;
         else if (key.getName().equals(ClouserHollowKnightPhysicsMod.AXIS_Y_GAMERULE.getName())) channel = ClouserHollowKnightPhysicsMod.AXIS_Y_ON;
         else if (key.getName().equals(ClouserHollowKnightPhysicsMod.DOUBLEJUMP_GAMERULE.getName())) channel = ClouserHollowKnightPhysicsMod.DOUBLEJUMP_ON;
+        else if (key.getName().equals(ClouserHollowKnightPhysicsMod.CANJUMP_GAMERULE.getName())) channel = ClouserHollowKnightPhysicsMod.CANJUMP_ON;
+        else if (key.getName().equals(ClouserHollowKnightPhysicsMod.PERSPECTIVE_LOCKED_GAMERULE.getName())) channel = ClouserHollowKnightPhysicsMod.PERSPECTIVE_LOCKED_ON;
+        else if (key.getName().equals(ClouserHollowKnightPhysicsMod.HOLLOWKNIGHT_JUMP_GAMERULE.getName())) channel = ClouserHollowKnightPhysicsMod.HOLLOWKNIGHT_JUMP_ON;
+        else if (key.getName().equals(ClouserHollowKnightPhysicsMod.ZKEYS_LOOK_GAMERULE.getName())) channel = ClouserHollowKnightPhysicsMod.ZKEYS_LOOK_ON;
+        else if (key.getName().equals(ClouserHollowKnightPhysicsMod.PLAYER_STEP_GAMERULE.getName()))
+        {
+            data.writeFloat((float)DoubleArgumentType.getDouble(context, "value"));
+
+            for(ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+                server.execute(() -> ServerPlayNetworking.send(player, ClouserHollowKnightPhysicsMod.PLAYER_STEP_HEIGHT, data));
+            }
+            return;
+        }
         else return;
 
-        MinecraftServer server = context.getSource().getServer();
-
-        PacketByteBuf data = PacketByteBufs.create();
         data.writeBoolean(BoolArgumentType.getBool(context, "value"));
 
         for(ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {

@@ -5,6 +5,11 @@
   "gamerule.axisXenabled": "Is the horizontal look axis on",
   "gamerule.axisYenabled": "Is the vertical look axis on",
   "gamerule.canDoubleJump": "Can the player double jump",
+  "gamerule.canPlayerJump": "Can the player jump",
+  "gamerule.perspectiveLocked": "Can the player change perspective",
+  "gamerule.hollowKnightJump": "Is Hollow Knight jump on",
   "commands.velocity.success.multiple": "Set velocity of %s entities to %s, %s, %s",
-  "commands.velocity.success.single": "Set velocity of %s to %s, %s, %s"
+  "commands.velocity.success.single": "Set velocity of %s to %s, %s, %s",
+  "commands.chatclear.success": "Chat cleared!",
+  "commands.perspective.success": "Perspective set!"
 }

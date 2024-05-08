@@ -9,8 +9,10 @@
     "defaultRequire": 1
   },
   "mixins": [
+    "EntityRendererMixin",
     "EntityMixin",
     "KeyBindingMixin",
-    "LivingEntityMixin"
+    "LivingEntityMixin",
+    "OptionsMixin"
   ]
 }

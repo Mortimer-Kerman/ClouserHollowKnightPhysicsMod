@@ -1,5 +1,6 @@
 package net.mortimer_kerman.clouserhollowknightphysicsmod.mixin.client;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
@@ -9,6 +10,10 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.stat.Stat;
+import net.minecraft.stat.Stats;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -29,6 +34,10 @@ public abstract class PlayerMixin extends LivingEntityMixin
 {
     @Shadow @Final private PlayerAbilities abilities;
 
+    @Shadow public abstract void addExhaustion(float exhaustion);
+
+    @Shadow public abstract void incrementStat(Identifier stat);
+
     @Inject(at = @At("HEAD"), method = "tick()V")
     private void tick(CallbackInfo info)
     {
@@ -40,60 +49,81 @@ public abstract class PlayerMixin extends LivingEntityMixin
             if (IsKnockbackOn()) return;
         }
 
-        if(abilities.flying || isFallFlying() || isInFluid() || !ArePhysicsOn()) return;
+        if(abilities.flying || isFallFlying() || isInFluid()) return;
 
-        boolean hasSpeed = hasStatusEffect(StatusEffects.SPEED);
-        StatusEffectInstance speedEffect = getStatusEffect(StatusEffects.SPEED);
-        double speedBonus = (hasSpeed && (speedEffect != null) ? (speedEffect.getAmplifier() + 1) : 0)*0.2D;
+        Vec3d velocity = getVelocity();
 
-        boolean hasSlowness = hasStatusEffect(StatusEffects.SLOWNESS);
-        StatusEffectInstance slownEffect = getStatusEffect(StatusEffects.SLOWNESS);
-        double slownMalus = MathHelper.clamp((hasSlowness && (slownEffect != null) ? (slownEffect.getAmplifier() + 1) : 0)*0.15D,0D,1D);
+        double motionX = velocity.x;
+        double motionY = velocity.y;
+        double motionZ = velocity.z;
 
-        double walkSpeed = isSprinting() ? 0.280 : 0.215;
-
-        Vec3d forwardVec = getRotationVecClient().withAxis(Direction.Axis.Y,0).normalize().multiply(walkSpeed*(1+speedBonus)*(1-slownMalus));
-        Vec3d leftVec = forwardVec.rotateY((float)Math.PI/2);
-
-        Vec3d inputVec = Vec3d.ZERO;
-
-        if (MinecraftClient.getInstance().options.forwardKey.isPressed()) inputVec = inputVec.add(forwardVec);
-        if (MinecraftClient.getInstance().options.backKey.isPressed()) inputVec = inputVec.subtract(forwardVec);
-        if (MinecraftClient.getInstance().options.leftKey.isPressed()) inputVec = inputVec.add(leftVec);
-        if (MinecraftClient.getInstance().options.rightKey.isPressed()) inputVec = inputVec.subtract(leftVec);
-
-        double slipperness = 0.91;
-        if (isOnGround()) slipperness = getWorld().getBlockState(getBlockPos().down()).getBlock().getSlipperiness() * 0.91;
-
-        double motionX = inputVec.x * slipperness;
-        double motionY = inputVec.y + (getVelocity().y / 0.98);
-        double motionZ = inputVec.z * slipperness;
-
-        if (MinecraftClient.getInstance().options.jumpKey.isPressed())
+        if (ArePhysicsOn())
         {
-            if(!isJumping)
-            {
-                if (jumpsAmount < 1 || (DoubleJumpOn() && jumpsAmount < 2)) jumpTicks = 6;
-                jumpsAmount++;
-                isJumping = true;
-            }
+            boolean hasSpeed = hasStatusEffect(StatusEffects.SPEED);
+            StatusEffectInstance speedEffect = getStatusEffect(StatusEffects.SPEED);
+            double speedBonus = (hasSpeed && (speedEffect != null) ? (speedEffect.getAmplifier() + 1) : 0)*0.2D;
 
-            if (jumpTicks > 0)
-            {
-                jumpTicks--;
-                motionY = 0.4;
-            }
-        }
-        else
-        {
-            jumpTicks = 0;
-            isJumping = false;
+            boolean hasSlowness = hasStatusEffect(StatusEffects.SLOWNESS);
+            StatusEffectInstance slownEffect = getStatusEffect(StatusEffects.SLOWNESS);
+            double slownMalus = MathHelper.clamp((hasSlowness && (slownEffect != null) ? (slownEffect.getAmplifier() + 1) : 0)*0.15D,0D,1D);
+
+            double walkSpeed = isSprinting() ? 0.280 : 0.215;
+
+            Vec3d forwardVec = getRotationVecClient().withAxis(Direction.Axis.Y,0).normalize().multiply(walkSpeed*(1+speedBonus)*(1-slownMalus));
+            Vec3d leftVec = forwardVec.rotateY((float)Math.PI/2);
+
+            Vec3d inputVec = Vec3d.ZERO;
+
+            if (MinecraftClient.getInstance().options.forwardKey.isPressed()) inputVec = inputVec.add(forwardVec);
+            if (MinecraftClient.getInstance().options.backKey.isPressed()) inputVec = inputVec.subtract(forwardVec);
+            if (MinecraftClient.getInstance().options.leftKey.isPressed()) inputVec = inputVec.add(leftVec);
+            if (MinecraftClient.getInstance().options.rightKey.isPressed()) inputVec = inputVec.subtract(leftVec);
+
+            double slipperness = 0.91;
+            if (isOnGround()) slipperness = getWorld().getBlockState(getBlockPos().down()).getBlock().getSlipperiness() * 0.91;
+
+            motionX = inputVec.x * slipperness;
+            motionY = inputVec.y + (motionY / 0.98);
+            motionZ = inputVec.z * slipperness;
         }
 
-        if (isOnGround())
+        boolean startingJump = false;
+
+        if(HollowKnightJumpOn())
         {
-            jumpsAmount = 0;
-            isJumping = false;
+            if (MinecraftClient.getInstance().options.jumpKey.isPressed() && CanJump())
+            {
+                if(!isJumping)
+                {
+                    if (jumpsAmount < 1 || (DoubleJumpOn() && jumpsAmount < 2))
+                    {
+                        jumpsAmount++;
+                        jumpTicks = 6;
+                        fallDistance = 0;
+                        recordJump();
+                        startingJump = true;
+                    }
+                    isJumping = true;
+                }
+
+                if (jumpTicks > 0)
+                {
+                    jumpTicks--;
+                    motionY = 0.4;
+                }
+            }
+            else
+            {
+                jumpTicks = 0;
+                isJumping = false;
+            }
+
+            if (isOnGround() && !startingJump)
+            {
+                jumpsAmount = 0;
+                isJumping = false;
+            }
+            else if (jumpsAmount == 0) jumpsAmount = 1;
         }
 
         setVelocity(motionX, motionY, motionZ);
@@ -116,7 +146,7 @@ public abstract class PlayerMixin extends LivingEntityMixin
         PacketByteBuf data = PacketByteBufs.create();
         data.writeInt(20);
 
-        server.execute(() -> ServerPlayNetworking.send(server.getPlayerManager().getPlayer(getUuid()), ClouserHollowKnightPhysicsMod.KNOCKBACK_COOLDOWN, data));
+        server.execute(() -> ServerPlayNetworking.send(((ServerPlayerEntity)(Object)this), ClouserHollowKnightPhysicsMod.KNOCKBACK_COOLDOWN, data));
         return strength;
     }
 
@@ -137,18 +167,26 @@ public abstract class PlayerMixin extends LivingEntityMixin
         this.prevYaw += g;
         this.prevPitch = MathHelper.clamp(this.prevPitch, -90.0f, 90.0f);
         if (this.getVehicle() != null) {
-            this.getVehicle().onPassengerLookAround(getServer().getPlayerManager().getPlayer(getUuid()));
+            this.getVehicle().onPassengerLookAround(((PlayerEntity)(Object)this));
         }
     }
 
     @Inject(at = @At("HEAD"), method = "jump()V", cancellable = true)
     protected void onJump(CallbackInfo ci)
     {
-        if (!ArePhysicsOn()) return;
-        ci.cancel();
+        if (HollowKnightJumpOn() || !CanJump()) ci.cancel();
+    }
+
+    private void recordJump()
+    {
+        MinecraftClient.getInstance().execute(() -> ClientPlayNetworking.send(ClouserHollowKnightPhysicsMod.JUMP_RECORD, PacketByteBufs.create()));
+        if (isSprinting()) addExhaustion(0.2f);
+        else addExhaustion(0.05f);
     }
 
     private static boolean ArePhysicsOn() { return ClouserHollowKnightPhysicsModClient.physicsOn; }
     private static boolean IsKnockbackOn() { return ClouserHollowKnightPhysicsModClient.knockbackOn; }
     private static boolean DoubleJumpOn() { return ClouserHollowKnightPhysicsModClient.doubleJumpOn; }
+    private static boolean CanJump() { return ClouserHollowKnightPhysicsModClient.canJump; }
+    private static boolean HollowKnightJumpOn() { return ClouserHollowKnightPhysicsModClient.hollowKnightJump; }
 }
