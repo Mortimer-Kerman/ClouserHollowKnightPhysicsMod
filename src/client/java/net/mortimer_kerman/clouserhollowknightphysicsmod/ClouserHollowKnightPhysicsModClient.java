@@ -55,7 +55,7 @@ public class ClouserHollowKnightPhysicsModClient implements ClientModInitializer
 		});
 
 		ClientPlayNetworking.registerGlobalReceiver(ClouserHollowKnightPhysicsMod.VELOCITY_CHANGE, (client, handler, buf, responseSender) -> {
-			if(client.player == null) return;
+			if (client.player == null) return;
 			client.player.setVelocity(client.player.getVelocity().multiply(buf.readVec3d()).add(buf.readVec3d()));
 		});
 	}

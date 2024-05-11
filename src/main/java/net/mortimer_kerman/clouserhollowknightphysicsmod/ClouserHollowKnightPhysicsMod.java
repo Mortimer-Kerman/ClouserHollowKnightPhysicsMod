@@ -131,12 +131,13 @@ public class ClouserHollowKnightPhysicsMod implements ModInitializer
 		ServerPlayNetworking.registerGlobalReceiver(ClouserHollowKnightPhysicsMod.JUMP_RECORD, (server, player, handler, buf, sender) -> player.incrementStat(Stats.JUMP));
 
 		ServerPlayNetworking.registerGlobalReceiver(ClouserHollowKnightPhysicsMod.ZKEY_PRESS, (server, player, handler, buf, sender) -> {
-			int code = buf.readInt();
-			System.out.println("received");
-			if (code == 0) player.getWorld().setBlockState(new BlockPos(13, -40, 13), Blocks.REDSTONE_BLOCK.getDefaultState(), 3);
-			if (code == 1) player.getWorld().setBlockState(new BlockPos(13, -40, 17), Blocks.REDSTONE_BLOCK.getDefaultState(), 3);
-			if (code == 2) player.getWorld().setBlockState(new BlockPos(13, -40, 15), Blocks.REDSTONE_BLOCK.getDefaultState(), 3);
-			if (code == 3) player.getWorld().setBlockState(new BlockPos(13, -40, 15), Blocks.REDSTONE_BLOCK.getDefaultState(), 3);
+			server.execute(() -> {
+				int code = buf.readInt();
+				if (code == 0) player.getWorld().setBlockState(new BlockPos(13, -40, 13), Blocks.REDSTONE_BLOCK.getDefaultState(), 3);
+				if (code == 1) player.getWorld().setBlockState(new BlockPos(13, -40, 17), Blocks.REDSTONE_BLOCK.getDefaultState(), 3);
+				if (code == 2) player.getWorld().setBlockState(new BlockPos(13, -40, 15), Blocks.REDSTONE_BLOCK.getDefaultState(), 3);
+				if (code == 3) player.getWorld().setBlockState(new BlockPos(13, -40, 15), Blocks.REDSTONE_BLOCK.getDefaultState(), 3);
+			});
 		});
 	}
 

@@ -41,7 +41,6 @@ public class KeyBindingMixin
     @Inject(at = @At("HEAD"), method = "setPressed")
     public void setPressed(boolean pressed, CallbackInfo ci)
     {
-        System.out.println("sending...");
         if (!ClouserHollowKnightPhysicsModClient.zKeysLookOn) return;
         if (this.pressed == pressed) return;
         if (!translationKey.equals("key.forward") && !translationKey.equals("key.back")) return;
@@ -63,6 +62,5 @@ public class KeyBindingMixin
         data.writeInt(code);
 
         MinecraftClient.getInstance().execute(() -> ClientPlayNetworking.send(ClouserHollowKnightPhysicsMod.ZKEY_PRESS, data));
-        System.out.println("sent");
     }
 }
