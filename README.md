@@ -23,8 +23,7 @@ In vanilla Minecraft, when movement keys are released, player's velocity is cons
 But in Hollow Knight, it's different.
 As soon as the player releases movement keys, they stops mid-air, and can immediately start to move in another direction.
 
-<img src="gallery/instantstop.gif" />
-<img src="gallery/instantchange.gif" />
+<img src="gallery/instantstop.gif" /><img src="gallery/instantchange.gif" />
 
 In Minecraft, the jump is very basic. You press jump, the player jumps a certain height, which normally is always the same.
 
@@ -99,7 +98,7 @@ Sets the targeted players' perspectives to the specified one.
 | `playerStepHeight` | Max player's step height. Default is 0.6 to allow to step on stairs or slabs | `0.6` | Double |
 
 > [!NOTE]
-> The `zKeysLookOn` command is calibrated to communicate with the map's command blocks. It'll not work outside of the map
+> The `zKeysLookOn` gamerule is calibrated to communicate with the map's command blocks. It'll not work outside of the map
 
 ## Light manipulation
 
@@ -113,12 +112,12 @@ In addition to all of these commands and gameules, this mod manipulates the enti
 
 # License and credits
 
-This mod is open-source and copyrighted under the MIT licence. Full license [here](LICENSE).
+This mod is open-source and copyrighted under MIT licence. Full license [here](LICENSE).
 
-Hollow Knight is the copyright of Team Cherry. [(teamcherry.com.au)](teamcherry.com.au) [(hollowknight.com)](hollowknight.com) 'Hollow Knight' the name and logo are trademarks of Team Cherry.
+_Hollow Knight is the copyright of Team Cherry. 'Hollow Knight' the name and logo are trademarks of Team Cherry._<br>
+https://teamcherry.com.au<br>
+https://hollowknight.com
 
 <p align="center">
     <img src="gallery/logo.png" height="200"/>
 </p>
-
-------
