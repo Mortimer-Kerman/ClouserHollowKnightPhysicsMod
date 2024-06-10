@@ -11,9 +11,6 @@ import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.stat.Stat;
-import net.minecraft.stat.Stats;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -35,8 +32,6 @@ public abstract class PlayerMixin extends LivingEntityMixin
     @Shadow @Final private PlayerAbilities abilities;
 
     @Shadow public abstract void addExhaustion(float exhaustion);
-
-    @Shadow public abstract void incrementStat(Identifier stat);
 
     @Inject(at = @At("HEAD"), method = "tick()V")
     private void tick(CallbackInfo info)

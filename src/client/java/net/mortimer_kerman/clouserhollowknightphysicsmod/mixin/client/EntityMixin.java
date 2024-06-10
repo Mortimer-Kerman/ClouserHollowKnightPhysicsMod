@@ -15,8 +15,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.UUID;
-
 @Mixin(Entity.class)
 public abstract class EntityMixin
 {
@@ -28,7 +26,6 @@ public abstract class EntityMixin
     @Shadow public abstract BlockPos getBlockPos();
     @Shadow public abstract Vec3d getVelocity();
     @Shadow @Nullable public abstract MinecraftServer getServer();
-    @Shadow public abstract UUID getUuid();
     @Shadow public abstract void setVelocity(double x, double y, double z);
     @Shadow public abstract void setPitch(float pitch);
     @Shadow public abstract float getPitch();
