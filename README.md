@@ -73,7 +73,7 @@ The perspective command allows to modify players perspectives.
 #### Syntax:
 - `/perspective (firstPerson|thirdPersonBack|thirdPersonFront)`
 Sets the player's perspective to the specified one.
-- `/velocity <player> (firstPerson|thirdPersonBack|thirdPersonFront)`
+- `/perspective <player> (firstPerson|thirdPersonBack|thirdPersonFront)`
 Sets the targeted players' perspectives to the specified one.
 #### Examples:
 | Command | Description |
