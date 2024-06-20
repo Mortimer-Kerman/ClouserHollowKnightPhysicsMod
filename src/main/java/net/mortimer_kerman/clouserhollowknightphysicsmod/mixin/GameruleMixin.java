@@ -17,6 +17,7 @@ import net.minecraft.world.GameRules;
 
 import net.mortimer_kerman.clouserhollowknightphysicsmod.ClouserHollowKnightPhysicsMod;
 
+import net.mortimer_kerman.clouserhollowknightphysicsmod.Payloads;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -28,7 +29,7 @@ public class GameruleMixin
     @Inject(at = @At("HEAD"), method = "executeSet")
     private static <T extends GameRules.Rule<T>> void SetGravity(CommandContext<ServerCommandSource> context, GameRules.Key<T> key, CallbackInfoReturnable<Integer> cir)
     {
-        Identifier channel;
+        String channel;
         MinecraftServer server = context.getSource().getServer();
         PacketByteBuf data = PacketByteBufs.create();
 
@@ -44,19 +45,19 @@ public class GameruleMixin
         else if (key.getName().equals(ClouserHollowKnightPhysicsMod.ZKEYS_LOOK_GAMERULE.getName())) channel = ClouserHollowKnightPhysicsMod.ZKEYS_LOOK_ON;
         else if (key.getName().equals(ClouserHollowKnightPhysicsMod.PLAYER_STEP_GAMERULE.getName()))
         {
-            data.writeFloat((float)DoubleArgumentType.getDouble(context, "value"));
+            float value = (float)DoubleArgumentType.getDouble(context, "value");
 
             for(ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-                server.execute(() -> ServerPlayNetworking.send(player, ClouserHollowKnightPhysicsMod.PLAYER_STEP_HEIGHT, data));
+                server.execute(() -> ServerPlayNetworking.send(player, new Payloads.FloatPayload(ClouserHollowKnightPhysicsMod.PLAYER_STEP_HEIGHT, value)));
             }
             return;
         }
         else return;
 
-        data.writeBoolean(BoolArgumentType.getBool(context, "value"));
+        boolean value = BoolArgumentType.getBool(context, "value");
 
         for(ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-            server.execute(() -> ServerPlayNetworking.send(player, channel, data));
+            server.execute(() -> ServerPlayNetworking.send(player, new Payloads.BooleanPayload(channel, value)));
         }
     }
 }

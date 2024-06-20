@@ -9,6 +9,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.mortimer_kerman.clouserhollowknightphysicsmod.ClouserHollowKnightPhysicsMod;
 import net.mortimer_kerman.clouserhollowknightphysicsmod.ClouserHollowKnightPhysicsModClient;
 
+import net.mortimer_kerman.clouserhollowknightphysicsmod.Payloads;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -58,9 +59,7 @@ public class KeyBindingMixin
             if (translationKey.equals("key.back")) code = 3;
         }
 
-        PacketByteBuf data = PacketByteBufs.create();
-        data.writeInt(code);
-
-        MinecraftClient.getInstance().execute(() -> ClientPlayNetworking.send(ClouserHollowKnightPhysicsMod.ZKEY_PRESS, data));
+        int finalCode = code;
+        MinecraftClient.getInstance().execute(() -> ClientPlayNetworking.send(new Payloads.IntPayload(ClouserHollowKnightPhysicsMod.ZKEY_PRESS, finalCode)));
     }
 }

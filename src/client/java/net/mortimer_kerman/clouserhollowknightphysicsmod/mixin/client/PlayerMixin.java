@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerAbilities;
@@ -19,12 +20,14 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.mortimer_kerman.clouserhollowknightphysicsmod.ClouserHollowKnightPhysicsMod;
 import net.mortimer_kerman.clouserhollowknightphysicsmod.ClouserHollowKnightPhysicsModClient;
 
+import net.mortimer_kerman.clouserhollowknightphysicsmod.Payloads;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerMixin extends LivingEntityMixin
@@ -64,7 +67,9 @@ public abstract class PlayerMixin extends LivingEntityMixin
 
             double walkSpeed = isSprinting() ? 0.280 : 0.215;
 
-            Vec3d forwardVec = getRotationVecClient().withAxis(Direction.Axis.Y,0).normalize().multiply(walkSpeed*(1+speedBonus)*(1-slownMalus));
+            double yawRad = getYaw() * (Math.PI/180);
+
+            Vec3d forwardVec = new Vec3d(-Math.sin(yawRad), 0, Math.cos(yawRad)).multiply(walkSpeed*(1+speedBonus)*(1-slownMalus));
             Vec3d leftVec = forwardVec.rotateY((float)Math.PI/2);
 
             Vec3d inputVec = Vec3d.ZERO;
@@ -138,10 +143,7 @@ public abstract class PlayerMixin extends LivingEntityMixin
         MinecraftServer server = getServer();
         if (server == null) return strength;
 
-        PacketByteBuf data = PacketByteBufs.create();
-        data.writeInt(20);
-
-        server.execute(() -> ServerPlayNetworking.send(((ServerPlayerEntity)(Object)this), ClouserHollowKnightPhysicsMod.KNOCKBACK_COOLDOWN, data));
+        server.execute(() -> ServerPlayNetworking.send(((ServerPlayerEntity)(Object)this), new Payloads.IntPayload(ClouserHollowKnightPhysicsMod.KNOCKBACK_COOLDOWN, 20)));
         return strength;
     }
 
@@ -174,9 +176,16 @@ public abstract class PlayerMixin extends LivingEntityMixin
 
     private void recordJump()
     {
-        MinecraftClient.getInstance().execute(() -> ClientPlayNetworking.send(ClouserHollowKnightPhysicsMod.JUMP_RECORD, PacketByteBufs.create()));
+        MinecraftClient.getInstance().execute(() -> ClientPlayNetworking.send(new Payloads.EmptyPayload(ClouserHollowKnightPhysicsMod.JUMP_RECORD)));
         if (isSprinting()) addExhaustion(0.2f);
         else addExhaustion(0.05f);
+    }
+
+    @Override
+    protected void stepHeight(CallbackInfoReturnable<Float> cir)
+    {
+        float f = ClouserHollowKnightPhysicsModClient.stepHeight;
+        cir.setReturnValue(this.getControllingPassenger() instanceof PlayerEntity ? Math.max(f, 1.0F) : f);
     }
 
     private static boolean ArePhysicsOn() { return ClouserHollowKnightPhysicsModClient.physicsOn; }

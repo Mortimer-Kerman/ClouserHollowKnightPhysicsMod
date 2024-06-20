@@ -1,7 +1,6 @@
 package net.mortimer_kerman.clouserhollowknightphysicsmod;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
@@ -39,104 +38,85 @@ public class ClouserHollowKnightPhysicsMod implements ModInitializer
 {
 	public static final String MOD_ID = "clouser-hollowknight-physics-mod";
 
-	public static final Identifier PHYSICS_ON = new Identifier(MOD_ID, "physics_on");
-	public static final Identifier MOVEMENT_ON = new Identifier(MOD_ID, "movement_on");
-	public static final Identifier KNOCKBACK_ON = new Identifier(MOD_ID, "knockback_on");
-	public static final Identifier AXIS_X_ON = new Identifier(MOD_ID, "axis_x_on");
-	public static final Identifier AXIS_Y_ON = new Identifier(MOD_ID, "axis_y_on");
-	public static final Identifier DOUBLEJUMP_ON = new Identifier(MOD_ID, "doublejump_on");
-	public static final Identifier CANJUMP_ON = new Identifier(MOD_ID, "canjump_on");
-	public static final Identifier PERSPECTIVE_LOCKED_ON = new Identifier(MOD_ID, "perspectivelocked_on");
-	public static final Identifier HOLLOWKNIGHT_JUMP_ON = new Identifier(MOD_ID, "hollowknight_jump_on");
-	public static final Identifier ZKEYS_LOOK_ON = new Identifier(MOD_ID, "zkeys_look_on");
-	public static final Identifier PLAYER_STEP_HEIGHT = new Identifier(MOD_ID, "player_step_height");
+	public static final String PHYSICS_ON = 			"physics_on";
+	public static final String MOVEMENT_ON = 			"movement_on";
+	public static final String KNOCKBACK_ON = 			"knockback_on";
+	public static final String AXIS_X_ON = 				"axis_x_on";
+	public static final String AXIS_Y_ON = 				"axis_y_on";
+	public static final String DOUBLEJUMP_ON = 			"doublejump_on";
+	public static final String CANJUMP_ON = 			"canjump_on";
+	public static final String PERSPECTIVE_LOCKED_ON = 	"perspectivelocked_on";
+	public static final String HOLLOWKNIGHT_JUMP_ON = 	"hollowknight_jump_on";
+	public static final String ZKEYS_LOOK_ON = 			"zkeys_look_on";
+	public static final String PLAYER_STEP_HEIGHT = 	"player_step_height";
 
-	public static final Identifier KNOCKBACK_COOLDOWN = new Identifier(MOD_ID, "knockback_timer");
-	public static final Identifier CLEARCHAT = new Identifier(MOD_ID, "clearchat");
-	public static final Identifier PERSPECTIVE_DATA = new Identifier(MOD_ID, "perspective_data");
-	public static final Identifier JUMP_RECORD = new Identifier(MOD_ID, "jump_record");
-	public static final Identifier VELOCITY_CHANGE = new Identifier(MOD_ID, "velocity_change");
-	public static final Identifier ZKEY_PRESS = new Identifier(MOD_ID, "zkey_press");
+	public static final String KNOCKBACK_COOLDOWN = "knockback_timer";
+	public static final String CLEARCHAT = 			"clearchat";
+	public static final String PERSPECTIVE_DATA = 	"perspective_data";
+	public static final String JUMP_RECORD = 		"jump_record";
+	public static final String VELOCITY_CHANGE = 	"velocity_change";
+	public static final String ZKEY_PRESS = 		"zkey_press";
 
-	public static final GameRules.Key<GameRules.BooleanRule> PHYSICS_GAMERULE = GameRuleRegistry.register("hollowKnightPhysicsOn", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(false));
-	public static final GameRules.Key<GameRules.BooleanRule> MOVEMENT_GAMERULE = GameRuleRegistry.register("canPlayerMove", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(true));
-	public static final GameRules.Key<GameRules.BooleanRule> KNOCKBACK_GAMERULE = GameRuleRegistry.register("isKnockbackOn", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(true));
-	public static final GameRules.Key<GameRules.BooleanRule> AXIS_X_GAMERULE = GameRuleRegistry.register("axisXenabled", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(true));
-	public static final GameRules.Key<GameRules.BooleanRule> AXIS_Y_GAMERULE = GameRuleRegistry.register("axisYenabled", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(true));
-	public static final GameRules.Key<GameRules.BooleanRule> DOUBLEJUMP_GAMERULE = GameRuleRegistry.register("canDoubleJump", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(false));
-	public static final GameRules.Key<GameRules.BooleanRule> CANJUMP_GAMERULE = GameRuleRegistry.register("canPlayerJump", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(true));
-	public static final GameRules.Key<GameRules.BooleanRule> PERSPECTIVE_LOCKED_GAMERULE = GameRuleRegistry.register("perspectiveLocked", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(false));
-	public static final GameRules.Key<GameRules.BooleanRule> HOLLOWKNIGHT_JUMP_GAMERULE = GameRuleRegistry.register("hollowKnightJump", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(false));
-	public static final GameRules.Key<GameRules.BooleanRule> ZKEYS_LOOK_GAMERULE = GameRuleRegistry.register("zKeysLookOn", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(false));
-	public static final GameRules.Key<DoubleRule> PLAYER_STEP_GAMERULE = GameRuleRegistry.register("playerStepHeight", GameRules.Category.MISC, GameRuleFactory.createDoubleRule(0.6D, 0));
+	public static final GameRules.Key<GameRules.BooleanRule> PHYSICS_GAMERULE = 			GameRuleRegistry.register("hollowKnightPhysicsOn", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(false));
+	public static final GameRules.Key<GameRules.BooleanRule> MOVEMENT_GAMERULE = 			GameRuleRegistry.register("canPlayerMove", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(true));
+	public static final GameRules.Key<GameRules.BooleanRule> KNOCKBACK_GAMERULE = 			GameRuleRegistry.register("isKnockbackOn", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(true));
+	public static final GameRules.Key<GameRules.BooleanRule> AXIS_X_GAMERULE = 				GameRuleRegistry.register("axisXenabled", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(true));
+	public static final GameRules.Key<GameRules.BooleanRule> AXIS_Y_GAMERULE = 				GameRuleRegistry.register("axisYenabled", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(true));
+	public static final GameRules.Key<GameRules.BooleanRule> DOUBLEJUMP_GAMERULE = 			GameRuleRegistry.register("canDoubleJump", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(false));
+	public static final GameRules.Key<GameRules.BooleanRule> CANJUMP_GAMERULE = 			GameRuleRegistry.register("canPlayerJump", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(true));
+	public static final GameRules.Key<GameRules.BooleanRule> PERSPECTIVE_LOCKED_GAMERULE = 	GameRuleRegistry.register("perspectiveLocked", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(false));
+	public static final GameRules.Key<GameRules.BooleanRule> HOLLOWKNIGHT_JUMP_GAMERULE = 	GameRuleRegistry.register("hollowKnightJump", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(false));
+	public static final GameRules.Key<GameRules.BooleanRule> ZKEYS_LOOK_GAMERULE = 			GameRuleRegistry.register("zKeysLookOn", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(false));
+	public static final GameRules.Key<DoubleRule> 			 PLAYER_STEP_GAMERULE = 		GameRuleRegistry.register("playerStepHeight", GameRules.Category.MISC, GameRuleFactory.createDoubleRule(0.6D, 0));
 
 	@Override
 	public void onInitialize()
 	{
-		ArgumentTypeRegistry.registerArgumentType(new Identifier(MOD_ID, "template_perspective"), PerspectiveArgumentType.class, ConstantArgumentSerializer.of(PerspectiveArgumentType::playerPerspective));
+		Payloads.RegisterPayloads();
+
+		ArgumentTypeRegistry.registerArgumentType(Identifier.of(MOD_ID, "template_perspective"), PerspectiveArgumentType.class, ConstantArgumentSerializer.of(PerspectiveArgumentType::playerPerspective));
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> VelocityCommand(dispatcher));
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> ClearChatCommand(dispatcher));
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> PerspectiveCommand(dispatcher));
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
 			ServerPlayerEntity player = handler.getPlayer();
 
-			PacketByteBuf physics = PacketByteBufs.create();
-			physics.writeBoolean(server.getGameRules().getBoolean(PHYSICS_GAMERULE));
-
-			PacketByteBuf movement = PacketByteBufs.create();
-			movement.writeBoolean(server.getGameRules().getBoolean(MOVEMENT_GAMERULE));
-
-			PacketByteBuf knockback = PacketByteBufs.create();
-			knockback.writeBoolean(server.getGameRules().getBoolean(KNOCKBACK_GAMERULE));
-
-			PacketByteBuf axisX = PacketByteBufs.create();
-			axisX.writeBoolean(server.getGameRules().getBoolean(AXIS_X_GAMERULE));
-
-			PacketByteBuf axisY = PacketByteBufs.create();
-			axisY.writeBoolean(server.getGameRules().getBoolean(AXIS_Y_GAMERULE));
-
-			PacketByteBuf doubleJump = PacketByteBufs.create();
-			doubleJump.writeBoolean(server.getGameRules().getBoolean(DOUBLEJUMP_GAMERULE));
-
-			PacketByteBuf canJump = PacketByteBufs.create();
-			canJump.writeBoolean(server.getGameRules().getBoolean(CANJUMP_GAMERULE));
-
-			PacketByteBuf perspectiveLocked = PacketByteBufs.create();
-			perspectiveLocked.writeBoolean(server.getGameRules().getBoolean(PERSPECTIVE_LOCKED_GAMERULE));
-
-			PacketByteBuf hollowKnightJump = PacketByteBufs.create();
-			hollowKnightJump.writeBoolean(server.getGameRules().getBoolean(HOLLOWKNIGHT_JUMP_GAMERULE));
-
-			PacketByteBuf zKeysLookOn = PacketByteBufs.create();
-			zKeysLookOn.writeBoolean(server.getGameRules().getBoolean(ZKEYS_LOOK_GAMERULE));
-
-			PacketByteBuf playerStepHeight = PacketByteBufs.create();
-			playerStepHeight.writeFloat((float)server.getGameRules().get(PLAYER_STEP_GAMERULE).get());
+			boolean physics = server.getGameRules().getBoolean(PHYSICS_GAMERULE);
+			boolean movement = server.getGameRules().getBoolean(MOVEMENT_GAMERULE);
+			boolean knockback = server.getGameRules().getBoolean(KNOCKBACK_GAMERULE);
+			boolean axisX = server.getGameRules().getBoolean(AXIS_X_GAMERULE);
+			boolean axisY = server.getGameRules().getBoolean(AXIS_Y_GAMERULE);
+			boolean doubleJump = server.getGameRules().getBoolean(DOUBLEJUMP_GAMERULE);
+			boolean canJump = server.getGameRules().getBoolean(CANJUMP_GAMERULE);
+			boolean perspectiveLocked = server.getGameRules().getBoolean(PERSPECTIVE_LOCKED_GAMERULE);
+			boolean hollowKnightJump = server.getGameRules().getBoolean(HOLLOWKNIGHT_JUMP_GAMERULE);
+			boolean zKeysLookOn = server.getGameRules().getBoolean(ZKEYS_LOOK_GAMERULE);
+			float playerStepHeight = (float)server.getGameRules().get(PLAYER_STEP_GAMERULE).get();
 
 			server.execute(() -> {
-				ServerPlayNetworking.send(player, PHYSICS_ON, physics);
-				ServerPlayNetworking.send(player, MOVEMENT_ON, movement);
-				ServerPlayNetworking.send(player, KNOCKBACK_ON, knockback);
-				ServerPlayNetworking.send(player, AXIS_X_ON, axisX);
-				ServerPlayNetworking.send(player, AXIS_Y_ON, axisY);
-				ServerPlayNetworking.send(player, DOUBLEJUMP_ON, doubleJump);
-				ServerPlayNetworking.send(player, CANJUMP_ON, canJump);
-				ServerPlayNetworking.send(player, PERSPECTIVE_LOCKED_ON, perspectiveLocked);
-				ServerPlayNetworking.send(player, HOLLOWKNIGHT_JUMP_ON, hollowKnightJump);
-				ServerPlayNetworking.send(player, ZKEYS_LOOK_ON, zKeysLookOn);
-				ServerPlayNetworking.send(player, PLAYER_STEP_HEIGHT, playerStepHeight);
+				ServerPlayNetworking.send(player, new Payloads.BooleanPayload(PHYSICS_ON, physics));
+				ServerPlayNetworking.send(player, new Payloads.BooleanPayload(MOVEMENT_ON, movement));
+				ServerPlayNetworking.send(player, new Payloads.BooleanPayload(KNOCKBACK_ON, knockback));
+				ServerPlayNetworking.send(player, new Payloads.BooleanPayload(AXIS_X_ON, axisX));
+				ServerPlayNetworking.send(player, new Payloads.BooleanPayload(AXIS_Y_ON, axisY));
+				ServerPlayNetworking.send(player, new Payloads.BooleanPayload(DOUBLEJUMP_ON, doubleJump));
+				ServerPlayNetworking.send(player, new Payloads.BooleanPayload(CANJUMP_ON, canJump));
+				ServerPlayNetworking.send(player, new Payloads.BooleanPayload(PERSPECTIVE_LOCKED_ON, perspectiveLocked));
+				ServerPlayNetworking.send(player, new Payloads.BooleanPayload(HOLLOWKNIGHT_JUMP_ON, hollowKnightJump));
+				ServerPlayNetworking.send(player, new Payloads.BooleanPayload(ZKEYS_LOOK_ON, zKeysLookOn));
+				ServerPlayNetworking.send(player, new Payloads.FloatPayload(PLAYER_STEP_HEIGHT, playerStepHeight));
 			});
 		});
 
-		ServerPlayNetworking.registerGlobalReceiver(ClouserHollowKnightPhysicsMod.JUMP_RECORD, (server, player, handler, buf, sender) -> player.incrementStat(Stats.JUMP));
+		ServerPlayNetworking.registerGlobalReceiver(Payloads.EmptyPayload.ID, (payload, context) -> { if (payload.strId().equals(JUMP_RECORD)) context.player().incrementStat(Stats.JUMP); });
 
-		ServerPlayNetworking.registerGlobalReceiver(ClouserHollowKnightPhysicsMod.ZKEY_PRESS, (server, player, handler, buf, sender) -> {
-			server.execute(() -> {
-				int code = buf.readInt();
-				if (code == 0) player.getWorld().setBlockState(new BlockPos(13, -40, 13), Blocks.REDSTONE_BLOCK.getDefaultState(), 3);
-				if (code == 1) player.getWorld().setBlockState(new BlockPos(13, -40, 17), Blocks.REDSTONE_BLOCK.getDefaultState(), 3);
-				if (code == 2) player.getWorld().setBlockState(new BlockPos(13, -40, 15), Blocks.REDSTONE_BLOCK.getDefaultState(), 3);
-				if (code == 3) player.getWorld().setBlockState(new BlockPos(13, -40, 15), Blocks.REDSTONE_BLOCK.getDefaultState(), 3);
+		ServerPlayNetworking.registerGlobalReceiver(Payloads.IntPayload.ID, (payload, context) -> {
+			if (payload.strId().equals(ZKEY_PRESS)) context.server().execute(() -> {
+				int code = payload.value();
+				if (code == 0) context.player().getWorld().setBlockState(new BlockPos(13, -40, 13), Blocks.REDSTONE_BLOCK.getDefaultState(), 3);
+				if (code == 1) context.player().getWorld().setBlockState(new BlockPos(13, -40, 17), Blocks.REDSTONE_BLOCK.getDefaultState(), 3);
+				if (code == 2) context.player().getWorld().setBlockState(new BlockPos(13, -40, 15), Blocks.REDSTONE_BLOCK.getDefaultState(), 3);
+				if (code == 3) context.player().getWorld().setBlockState(new BlockPos(13, -40, 15), Blocks.REDSTONE_BLOCK.getDefaultState(), 3);
 			});
 		});
 	}
@@ -187,17 +167,12 @@ public class ClouserHollowKnightPhysicsMod implements ModInitializer
 			{
 				if (pausePhysicsTicks != 0)
 				{
-					PacketByteBuf data = PacketByteBufs.create();
-					data.writeInt(pausePhysicsTicks);
-
-					player.getServer().execute(() -> ServerPlayNetworking.send(player, KNOCKBACK_COOLDOWN, data));
+					player.getServer().execute(() -> ServerPlayNetworking.send(player, new Payloads.IntPayload(KNOCKBACK_COOLDOWN, pausePhysicsTicks)));
 				}
 
-				PacketByteBuf data = PacketByteBufs.create();
-				data.writeVec3d(new Vec3d(velocity.isXRelative() ? 1 : 0, velocity.isYRelative() ? 1 : 0, velocity.isZRelative() ? 1 : 0));
-				data.writeVec3d(velocityArg);
+				Vec3d velocityRelative = new Vec3d(velocity.isXRelative() ? 1 : 0, velocity.isYRelative() ? 1 : 0, velocity.isZRelative() ? 1 : 0);
 
-				player.getServer().execute(() -> ServerPlayNetworking.send(player, VELOCITY_CHANGE, data));
+				player.getServer().execute(() -> ServerPlayNetworking.send(player, new Payloads.Vec3dCouplePayload(VELOCITY_CHANGE, velocityRelative, velocityArg)));
 			}
 			else
 			{
@@ -243,7 +218,7 @@ public class ClouserHollowKnightPhysicsMod implements ModInitializer
 		{
 			if (entity instanceof ServerPlayerEntity player)
 			{
-				player.getServer().execute(() -> ServerPlayNetworking.send(player, CLEARCHAT, PacketByteBufs.create()));
+				player.getServer().execute(() -> ServerPlayNetworking.send(player, new Payloads.EmptyPayload(CLEARCHAT)));
 			}
 		}
 
@@ -276,10 +251,7 @@ public class ClouserHollowKnightPhysicsMod implements ModInitializer
 		{
 			if (entity instanceof ServerPlayerEntity player)
 			{
-				PacketByteBuf data = PacketByteBufs.create();
-				data.writeInt(perspective.tag);
-
-				player.getServer().execute(() -> ServerPlayNetworking.send(player, PERSPECTIVE_DATA, data));
+				player.getServer().execute(() -> ServerPlayNetworking.send(player, new Payloads.IntPayload(PERSPECTIVE_DATA, perspective.tag)));
 			}
 		}
 

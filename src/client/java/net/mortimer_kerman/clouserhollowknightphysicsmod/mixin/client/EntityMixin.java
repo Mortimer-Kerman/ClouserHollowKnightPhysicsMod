@@ -2,6 +2,7 @@ package net.mortimer_kerman.clouserhollowknightphysicsmod.mixin.client;
 
 import net.minecraft.entity.Entity;
 
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -34,6 +35,7 @@ public abstract class EntityMixin
     @Shadow public float prevPitch;
     @Shadow public float prevYaw;
     @Shadow public @Nullable abstract Entity getVehicle();
+    @Shadow public @Nullable abstract LivingEntity getControllingPassenger();
 
     @Shadow public float fallDistance;
 
