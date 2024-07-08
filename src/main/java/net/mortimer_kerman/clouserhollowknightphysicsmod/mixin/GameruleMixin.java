@@ -52,6 +52,7 @@ public class GameruleMixin
             }
             return;
         }
+        else if (key.getName().equals(ClouserHollowKnightPhysicsMod.PLAYER_FALL_GAMERULE.getName())) channel = ClouserHollowKnightPhysicsMod.PLAYER_FALL;
         else return;
 
         boolean value = BoolArgumentType.getBool(context, "value");

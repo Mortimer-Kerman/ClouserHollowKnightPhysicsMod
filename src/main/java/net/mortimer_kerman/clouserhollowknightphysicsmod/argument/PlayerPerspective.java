@@ -1,4 +1,4 @@
-package net.mortimer_kerman.clouserhollowknightphysicsmod;
+package net.mortimer_kerman.clouserhollowknightphysicsmod.argument;
 
 import com.mojang.serialization.Codec;
 

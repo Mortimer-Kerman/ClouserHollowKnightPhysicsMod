@@ -54,11 +54,20 @@ public class Payloads
         public CustomPayload.Id<? extends CustomPayload> getId() { return ID; }
     }
 
+    public record FloatIntPayload(String strId, float valueF, int valueI) implements CustomPayload
+    {
+        public static final CustomPayload.Id<FloatIntPayload> ID = new CustomPayload.Id<>(PAYLOAD_FLOAT_INT);
+        public static final PacketCodec<RegistryByteBuf, FloatIntPayload> CODEC = PacketCodec.tuple(PacketCodecs.STRING, FloatIntPayload::strId, PacketCodecs.FLOAT, FloatIntPayload::valueF, PacketCodecs.INTEGER, FloatIntPayload::valueI, FloatIntPayload::new);
+        @Override
+        public CustomPayload.Id<? extends CustomPayload> getId() { return ID; }
+    }
+
     public static Identifier PAYLOAD_BOOL = Identifier.of(ClouserHollowKnightPhysicsMod.MOD_ID, "bool_payload");
     public static Identifier PAYLOAD_INT = Identifier.of(ClouserHollowKnightPhysicsMod.MOD_ID, "int_payload");
     public static Identifier PAYLOAD_FLOAT = Identifier.of(ClouserHollowKnightPhysicsMod.MOD_ID, "float_payload");
     public static Identifier PAYLOAD_VEC3D_COUPLE = Identifier.of(ClouserHollowKnightPhysicsMod.MOD_ID, "vec3d_couple_payload");
     public static Identifier PAYLOAD_EMPTY = Identifier.of(ClouserHollowKnightPhysicsMod.MOD_ID, "empty_payload");
+    public static Identifier PAYLOAD_FLOAT_INT = Identifier.of(ClouserHollowKnightPhysicsMod.MOD_ID, "float_int_payload");
 
     public static void RegisterPayloads() {
         PayloadTypeRegistry.playC2S().register(BooleanPayload.ID, BooleanPayload.CODEC);
@@ -71,6 +80,8 @@ public class Payloads
         PayloadTypeRegistry.playS2C().register(Vec3dCouplePayload.ID, Vec3dCouplePayload.CODEC);
         PayloadTypeRegistry.playC2S().register(EmptyPayload.ID, EmptyPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(EmptyPayload.ID, EmptyPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(FloatIntPayload.ID, FloatIntPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(FloatIntPayload.ID, FloatIntPayload.CODEC);
     }
 
     public static PacketCodec<ByteBuf, Vec3d> CODEC_VEC3D = new PacketCodec<>() {

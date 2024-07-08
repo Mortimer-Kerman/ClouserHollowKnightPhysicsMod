@@ -11,5 +11,12 @@
   "commands.velocity.success.multiple": "Set velocity of %s entities to %s, %s, %s",
   "commands.velocity.success.single": "Set velocity of %s to %s, %s, %s",
   "commands.chatclear.success": "Chat cleared!",
-  "commands.perspective.success": "Perspective set!"
+  "commands.perspective.success": "Perspective set!",
+  "commands.inventory.open": "Inventory opened!",
+  "commands.inventory.close": "Inventory closed!",
+  "commands.resetDoubleJump.success": "Double jump reset!",
+  "commands.shakeCamera.success": "Camera shaking!",
+  "commands.fov.success": "FOV set!",
+  "commands.fov.divisionbyzero": "You can't divide by zero!",
+  "commands.fastFall.success": "Fast falling set to %s!"
 }

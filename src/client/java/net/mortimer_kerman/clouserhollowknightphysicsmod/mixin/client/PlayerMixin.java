@@ -1,18 +1,14 @@
 package net.mortimer_kerman.clouserhollowknightphysicsmod.mixin.client;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerAbilities;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,16 +17,18 @@ import net.mortimer_kerman.clouserhollowknightphysicsmod.ClouserHollowKnightPhys
 import net.mortimer_kerman.clouserhollowknightphysicsmod.ClouserHollowKnightPhysicsModClient;
 
 import net.mortimer_kerman.clouserhollowknightphysicsmod.Payloads;
+import net.mortimer_kerman.clouserhollowknightphysicsmod.interfaces.PlayerMixinInterface;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerEntity.class)
-public abstract class PlayerMixin extends LivingEntityMixin
+public abstract class PlayerMixin extends LivingEntityMixin implements PlayerMixinInterface
 {
     @Shadow @Final private PlayerAbilities abilities;
 
@@ -44,7 +42,7 @@ public abstract class PlayerMixin extends LivingEntityMixin
         if (ClouserHollowKnightPhysicsModClient.knockbackCooldown > 0)
         {
             ClouserHollowKnightPhysicsModClient.knockbackCooldown--;
-            if (IsKnockbackOn()) return;
+            if (ClouserHollowKnightPhysicsModClient.knockbackOn) return;
         }
 
         if(abilities.flying || isFallFlying() || isInFluid()) return;
@@ -55,7 +53,7 @@ public abstract class PlayerMixin extends LivingEntityMixin
         double motionY = velocity.y;
         double motionZ = velocity.z;
 
-        if (ArePhysicsOn())
+        if (ClouserHollowKnightPhysicsModClient.physicsOn)
         {
             boolean hasSpeed = hasStatusEffect(StatusEffects.SPEED);
             StatusEffectInstance speedEffect = getStatusEffect(StatusEffects.SPEED);
@@ -83,60 +81,64 @@ public abstract class PlayerMixin extends LivingEntityMixin
             if (isOnGround()) slipperness = getWorld().getBlockState(getBlockPos().down()).getBlock().getSlipperiness() * 0.91;
 
             motionX = inputVec.x * slipperness;
-            motionY = inputVec.y + (motionY / 0.98);
             motionZ = inputVec.z * slipperness;
         }
 
-        boolean startingJump = false;
+        if (ClouserHollowKnightPhysicsModClient.fastFall) motionY /= 0.98;
 
-        if(HollowKnightJumpOn())
+        if (ClouserHollowKnightPhysicsModClient.canPlayerFall)
         {
-            if (MinecraftClient.getInstance().options.jumpKey.isPressed() && CanJump())
+            boolean startingJump = false;
+            if (ClouserHollowKnightPhysicsModClient.hollowKnightJump)
             {
-                if(!isJumping)
+                if (MinecraftClient.getInstance().options.jumpKey.isPressed() && ClouserHollowKnightPhysicsModClient.canJump)
                 {
-                    if (jumpsAmount < 1 || (DoubleJumpOn() && jumpsAmount < 2))
+                    if(!isJumping)
                     {
-                        jumpsAmount++;
-                        jumpTicks = 6;
-                        fallDistance = 0;
-                        recordJump();
-                        startingJump = true;
+                        if (jumpsAmount < 1 || (ClouserHollowKnightPhysicsModClient.doubleJumpOn && jumpsAmount < 2))
+                        {
+                            jumpsAmount++;
+                            jumpTicks = 6;
+                            fallDistance = 0;
+                            recordJump();
+                            startingJump = true;
+                        }
+                        isJumping = true;
                     }
-                    isJumping = true;
-                }
 
-                if (jumpTicks > 0)
+                    if (jumpTicks > 0)
+                    {
+                        jumpTicks--;
+                        motionY = 0.4;
+                    }
+                }
+                else
                 {
-                    jumpTicks--;
-                    motionY = 0.4;
+                    jumpTicks = 0;
+                    isJumping = false;
                 }
-            }
-            else
-            {
-                jumpTicks = 0;
-                isJumping = false;
-            }
 
-            if (isOnGround() && !startingJump)
-            {
-                jumpsAmount = 0;
-                isJumping = false;
+                if (isOnGround() && !startingJump)
+                {
+                    jumpsAmount = 0;
+                    isJumping = false;
+                }
+                else if (jumpsAmount == 0) jumpsAmount = 1;
             }
-            else if (jumpsAmount == 0) jumpsAmount = 1;
         }
+        else motionY = 0;
 
         setVelocity(motionX, motionY, motionZ);
     }
 
-    private int jumpTicks = 0;
-    private int jumpsAmount = 0;
-    private boolean isJumping = false;
+    @Unique private int jumpTicks = 0;
+    @Unique public int jumpsAmount = 0;
+    @Unique private boolean isJumping = false;
 
     @Override
     protected double knockbackStrength(double strength)
     {
-        if (!IsKnockbackOn()) return 0;
+        if (!ClouserHollowKnightPhysicsModClient.knockbackOn) return 0;
 
         if (getWorld().isClient) return strength;
 
@@ -146,7 +148,7 @@ public abstract class PlayerMixin extends LivingEntityMixin
         server.execute(() -> ServerPlayNetworking.send(((ServerPlayerEntity)(Object)this), new Payloads.IntPayload(ClouserHollowKnightPhysicsMod.KNOCKBACK_COOLDOWN, 20)));
         return strength;
     }
-
+    
     @Override
     protected void onLookDirectionChange(double cursorDeltaX, double cursorDeltaY, CallbackInfo ci)
     {
@@ -171,10 +173,10 @@ public abstract class PlayerMixin extends LivingEntityMixin
     @Inject(at = @At("HEAD"), method = "jump()V", cancellable = true)
     protected void onJump(CallbackInfo ci)
     {
-        if (HollowKnightJumpOn() || !CanJump()) ci.cancel();
+        if (ClouserHollowKnightPhysicsModClient.hollowKnightJump || !ClouserHollowKnightPhysicsModClient.canJump) ci.cancel();
     }
 
-    private void recordJump()
+    @Unique private void recordJump()
     {
         MinecraftClient.getInstance().execute(() -> ClientPlayNetworking.send(new Payloads.EmptyPayload(ClouserHollowKnightPhysicsMod.JUMP_RECORD)));
         if (isSprinting()) addExhaustion(0.2f);
@@ -188,9 +190,8 @@ public abstract class PlayerMixin extends LivingEntityMixin
         cir.setReturnValue(this.getControllingPassenger() instanceof PlayerEntity ? Math.max(f, 1.0F) : f);
     }
 
-    private static boolean ArePhysicsOn() { return ClouserHollowKnightPhysicsModClient.physicsOn; }
-    private static boolean IsKnockbackOn() { return ClouserHollowKnightPhysicsModClient.knockbackOn; }
-    private static boolean DoubleJumpOn() { return ClouserHollowKnightPhysicsModClient.doubleJumpOn; }
-    private static boolean CanJump() { return ClouserHollowKnightPhysicsModClient.canJump; }
-    private static boolean HollowKnightJumpOn() { return ClouserHollowKnightPhysicsModClient.hollowKnightJump; }
+    @Override
+    public void clouserHollowKnightPhysicsMod$ResetDoubleJump() {
+        jumpsAmount = 1;
+    }
 }
