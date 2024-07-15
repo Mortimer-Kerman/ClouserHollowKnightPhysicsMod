@@ -1,14 +1,21 @@
 package net.mortimer_kerman.clouserhollowknightphysicsmod;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.client.option.SimpleOption;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.text.Text;
 import net.mortimer_kerman.clouserhollowknightphysicsmod.argument.Operation;
 import net.mortimer_kerman.clouserhollowknightphysicsmod.interfaces.PlayerMixinInterface;
+import org.lwjgl.glfw.GLFW;
 
 public class ClouserHollowKnightPhysicsModClient implements ClientModInitializer
 {
@@ -23,6 +30,9 @@ public class ClouserHollowKnightPhysicsModClient implements ClientModInitializer
 	public static boolean zKeysLookOn = false;
 	public static float stepHeight = 0.6f;
 	public static boolean canPlayerFall = true;
+	public static boolean cameraClip = true;
+	public static float eyeHeight = 1;
+	public static boolean silksongJump = false;
 
 	public static int knockbackCooldown = 0;
 
@@ -35,9 +45,30 @@ public class ClouserHollowKnightPhysicsModClient implements ClientModInitializer
 
 	public static boolean fastFall = false;
 
+	private static KeyBinding dashKey;
+	private static boolean dashPressed = false;
+
 	@Override
 	public void onInitializeClient()
 	{
+		dashKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+				"key." + ClouserHollowKnightPhysicsMod.MOD_ID + ".dash",
+				InputUtil.Type.KEYSYM,
+				GLFW.GLFW_KEY_UNKNOWN,
+				KeyBinding.MOVEMENT_CATEGORY
+		));
+
+		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+			if (dashKey.isPressed()) {
+				if(!dashPressed)
+				{
+					MinecraftClient.getInstance().execute(() -> ClientPlayNetworking.send(new Payloads.EmptyPayload(ClouserHollowKnightPhysicsMod.RECORD_DASH)));
+					dashPressed = true;
+				}
+			}
+			else dashPressed = false;
+		});
+
 		ClientPlayNetworking.registerGlobalReceiver(Payloads.BooleanPayload.ID, (payload, context) -> {
 			switch (payload.strId()) {
 				case ClouserHollowKnightPhysicsMod.PHYSICS_ON:
@@ -87,12 +118,19 @@ public class ClouserHollowKnightPhysicsModClient implements ClientModInitializer
 				case ClouserHollowKnightPhysicsMod.FAST_FALL:
 					fastFall = payload.value();
 					break;
+				case ClouserHollowKnightPhysicsMod.CAMERA_CLIP:
+					cameraClip = payload.value();
+					break;
+				case ClouserHollowKnightPhysicsMod.SILKSONG_JUMP:
+					silksongJump = payload.value();
+					break;
 			}
 		});
 
 		ClientPlayNetworking.registerGlobalReceiver(Payloads.FloatPayload.ID, (payload, context) -> {
 			switch (payload.strId()) {
 				case ClouserHollowKnightPhysicsMod.PLAYER_STEP_HEIGHT -> stepHeight = payload.value();
+				case ClouserHollowKnightPhysicsMod.PLAYER_EYE_HEIGHT -> eyeHeight = payload.value();
 			}
 		});
 

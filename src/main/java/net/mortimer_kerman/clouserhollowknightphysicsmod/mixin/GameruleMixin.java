@@ -53,6 +53,17 @@ public class GameruleMixin
             return;
         }
         else if (key.getName().equals(ClouserHollowKnightPhysicsMod.PLAYER_FALL_GAMERULE.getName())) channel = ClouserHollowKnightPhysicsMod.PLAYER_FALL;
+        else if (key.getName().equals(ClouserHollowKnightPhysicsMod.CAMERA_CLIP_GAMERULE.getName())) channel = ClouserHollowKnightPhysicsMod.CAMERA_CLIP;
+        else if (key.getName().equals(ClouserHollowKnightPhysicsMod.PLAYER_EYE_HEIGHT_GAMERULE.getName()))
+        {
+            float value = (float)DoubleArgumentType.getDouble(context, "value");
+
+            for(ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+                server.execute(() -> ServerPlayNetworking.send(player, new Payloads.FloatPayload(ClouserHollowKnightPhysicsMod.PLAYER_EYE_HEIGHT, value)));
+            }
+            return;
+        }
+        else if (key.getName().equals(ClouserHollowKnightPhysicsMod.SILKSONG_JUMP_GAMERULE.getName())) channel = ClouserHollowKnightPhysicsMod.SILKSONG_JUMP;
         else return;
 
         boolean value = BoolArgumentType.getBool(context, "value");

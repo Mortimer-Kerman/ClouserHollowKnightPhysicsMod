@@ -169,6 +169,8 @@ The fastFall command allows to toggle vertical air friction on targeted players,
 | `zKeysLookOn`           | Whether the forward and backward keys move the players or execute the look features of the map | `false`       | Bool   |
 | `playerStepHeight`      | Max player's step height. Default is 0.6 to allow to step on stairs or slabs                   | `0.6`         | Double |
 | `canPlayerFall`         | Whether the player can fall and jump                                                           | `true`        | Bool   |
+| `cameraClip`            | Whether the camera is clipped through blocks in third person                                   | `true`        | Bool   |
+| `playerEyeHeightFactor` | Multiplier for player's eye height                                                             | `1`           | Double |
 
 > [!NOTE]
 > The `zKeysLookOn` gamerule is calibrated to communicate with the map's command blocks. It'll not work outside of the map

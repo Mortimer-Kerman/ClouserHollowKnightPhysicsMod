@@ -109,7 +109,7 @@ public abstract class PlayerMixin extends LivingEntityMixin implements PlayerMix
                     if (jumpTicks > 0)
                     {
                         jumpTicks--;
-                        motionY = 0.4;
+                        motionY = ClouserHollowKnightPhysicsModClient.silksongJump ? 0.5 : 0.4;
                     }
                 }
                 else

@@ -19,9 +19,14 @@ import net.minecraft.block.Blocks;
 import net.minecraft.command.argument.*;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 import net.minecraft.entity.Entity;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.scoreboard.*;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.stat.Stat;
+import net.minecraft.stat.StatFormatter;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -54,6 +59,9 @@ public class ClouserHollowKnightPhysicsMod implements ModInitializer
 	public static final String ZKEYS_LOOK_ON = 			"zkeys_look_on";
 	public static final String PLAYER_STEP_HEIGHT = 	"player_step_height";
 	public static final String PLAYER_FALL =	 		"can_player_fall";
+	public static final String CAMERA_CLIP =	 		"camera_clip";
+	public static final String PLAYER_EYE_HEIGHT =	 	"eye_height";
+	public static final String SILKSONG_JUMP =	 		"silksong_jump";
 
 	public static final String KNOCKBACK_COOLDOWN = "knockback_timer";
 	public static final String CLEARCHAT = 			"clearchat";
@@ -64,6 +72,7 @@ public class ClouserHollowKnightPhysicsMod implements ModInitializer
 	public static final String INVENTORY =	 		"inventory";
 	public static final String RESET_DOUBLEJUMP = 	"reset_doublejump";
 	public static final String SHAKE_CAMERA = 		"shake_camera";
+	public static final String RECORD_DASH = 		"record_dash";
 
 	public static final String FOV_MODIFIER = 		"fov_modifier";
 	public static final String FAST_FALL = 			"fast_fall";
@@ -80,6 +89,18 @@ public class ClouserHollowKnightPhysicsMod implements ModInitializer
 	public static final GameRules.Key<GameRules.BooleanRule> ZKEYS_LOOK_GAMERULE = 			GameRuleRegistry.register("zKeysLookOn", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(false));
 	public static final GameRules.Key<DoubleRule> 			 PLAYER_STEP_GAMERULE = 		GameRuleRegistry.register("playerStepHeight", GameRules.Category.MISC, GameRuleFactory.createDoubleRule(0.6D, 0));
 	public static final GameRules.Key<GameRules.BooleanRule> PLAYER_FALL_GAMERULE = 		GameRuleRegistry.register("canPlayerFall", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(true));
+	public static final GameRules.Key<GameRules.BooleanRule> CAMERA_CLIP_GAMERULE = 		GameRuleRegistry.register("cameraClip", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(true));
+	public static final GameRules.Key<DoubleRule> 			 PLAYER_EYE_HEIGHT_GAMERULE = 	GameRuleRegistry.register("playerEyeHeightFactor", GameRules.Category.MISC, GameRuleFactory.createDoubleRule(1, -1000, 1000));
+	public static final GameRules.Key<GameRules.BooleanRule> SILKSONG_JUMP_GAMERULE = 		GameRuleRegistry.register("silksongJump", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(false));
+
+	public static final Identifier DASH_STAT = registerStat("dash", StatFormatter.DEFAULT);
+
+	private static Identifier registerStat(String id, StatFormatter formatter) {
+		Identifier identifier = Identifier.of(MOD_ID, id);
+		Registry.register(Registries.CUSTOM_STAT, id, identifier);
+		Stats.CUSTOM.getOrCreateStat(identifier, formatter);
+		return identifier;
+	}
 
 	@Override
 	public void onInitialize()
@@ -117,6 +138,9 @@ public class ClouserHollowKnightPhysicsMod implements ModInitializer
 			boolean zKeysLookOn = server.getGameRules().getBoolean(ZKEYS_LOOK_GAMERULE);
 			float playerStepHeight = (float)server.getGameRules().get(PLAYER_STEP_GAMERULE).get();
 			boolean canPlayerFall = server.getGameRules().getBoolean(PLAYER_FALL_GAMERULE);
+			boolean cameraClip = server.getGameRules().getBoolean(CAMERA_CLIP_GAMERULE);
+			float eyeHeight = (float)server.getGameRules().get(PLAYER_EYE_HEIGHT_GAMERULE).get();
+			boolean silksongJump = server.getGameRules().getBoolean(SILKSONG_JUMP_GAMERULE);
 
 			server.execute(() -> {
 				ServerPlayNetworking.send(player, new Payloads.BooleanPayload(PHYSICS_ON, physics));
@@ -131,12 +155,18 @@ public class ClouserHollowKnightPhysicsMod implements ModInitializer
 				ServerPlayNetworking.send(player, new Payloads.BooleanPayload(ZKEYS_LOOK_ON, zKeysLookOn));
 				ServerPlayNetworking.send(player, new Payloads.FloatPayload(PLAYER_STEP_HEIGHT, playerStepHeight));
 				ServerPlayNetworking.send(player, new Payloads.BooleanPayload(PLAYER_FALL, canPlayerFall));
+				ServerPlayNetworking.send(player, new Payloads.BooleanPayload(CAMERA_CLIP, cameraClip));
+				ServerPlayNetworking.send(player, new Payloads.FloatPayload(PLAYER_EYE_HEIGHT, eyeHeight));
+				ServerPlayNetworking.send(player, new Payloads.BooleanPayload(SILKSONG_JUMP, silksongJump));
 
 				ServerPlayNetworking.send(player, new Payloads.BooleanPayload(FAST_FALL, playerState.fastFall));
 			});
 		});
 
-		ServerPlayNetworking.registerGlobalReceiver(Payloads.EmptyPayload.ID, (payload, context) -> { if (payload.strId().equals(JUMP_RECORD)) context.player().incrementStat(Stats.JUMP); });
+		ServerPlayNetworking.registerGlobalReceiver(Payloads.EmptyPayload.ID, (payload, context) -> {
+			if (payload.strId().equals(JUMP_RECORD)) context.player().incrementStat(Stats.JUMP);
+			else if (payload.strId().equals(RECORD_DASH)) context.player().incrementStat(DASH_STAT);
+		});
 
 		ServerPlayNetworking.registerGlobalReceiver(Payloads.IntPayload.ID, (payload, context) -> {
 			if (payload.strId().equals(ZKEY_PRESS)) context.server().execute(() -> {
