@@ -19,6 +19,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.UUID;
+
 @Mixin(Entity.class)
 public abstract class EntityMixin
 {
@@ -44,6 +46,8 @@ public abstract class EntityMixin
     @Shadow public abstract float getEyeHeight(EntityPose pose);
 
     @Shadow public abstract EntityPose getPose();
+
+    @Shadow public abstract UUID getUuid();
 
     @Inject(at = @At("HEAD"), method = "changeLookDirection(DD)V", cancellable = true)
     protected void onLookDirectionChange(double cursorDeltaX, double cursorDeltaY, CallbackInfo ci) { }

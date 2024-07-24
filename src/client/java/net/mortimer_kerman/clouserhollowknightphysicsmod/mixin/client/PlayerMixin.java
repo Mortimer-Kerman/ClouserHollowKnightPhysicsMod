@@ -18,6 +18,7 @@ import net.mortimer_kerman.clouserhollowknightphysicsmod.ClouserHollowKnightPhys
 
 import net.mortimer_kerman.clouserhollowknightphysicsmod.Payloads;
 import net.mortimer_kerman.clouserhollowknightphysicsmod.interfaces.PlayerMixinInterface;
+
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -38,6 +39,9 @@ public abstract class PlayerMixin extends LivingEntityMixin implements PlayerMix
     private void tick(CallbackInfo info)
     {
         if (!getWorld().isClient) return;
+
+        boolean isMainPlayer = getUuid().equals(MinecraftClient.getInstance().player.getUuid());
+        if (!isMainPlayer) return;
 
         if (ClouserHollowKnightPhysicsModClient.knockbackCooldown > 0)
         {

@@ -12,7 +12,6 @@ import net.minecraft.client.option.Perspective;
 import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.text.Text;
 import net.mortimer_kerman.clouserhollowknightphysicsmod.argument.Operation;
 import net.mortimer_kerman.clouserhollowknightphysicsmod.interfaces.PlayerMixinInterface;
 import org.lwjgl.glfw.GLFW;
