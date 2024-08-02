@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(KeyBinding.class)
-public class KeyBindingMixin
+public abstract class KeyBindingMixin
 {
     @Shadow @Final private String translationKey;
 

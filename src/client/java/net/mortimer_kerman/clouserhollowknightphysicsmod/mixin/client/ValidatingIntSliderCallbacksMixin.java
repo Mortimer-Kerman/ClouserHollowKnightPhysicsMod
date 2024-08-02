@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Optional;
 
 @Mixin(SimpleOption.ValidatingIntSliderCallbacks.class)
-public class ValidatingIntSliderCallbacksMixin
+public abstract class ValidatingIntSliderCallbacksMixin
 {
     @Inject(method = "validate(Ljava/lang/Integer;)Ljava/util/Optional;", at=@At("RETURN"), cancellable = true)
     public void validate(Integer integer, CallbackInfoReturnable<Optional<Integer>> cir)
